@@ -2,7 +2,7 @@ import { createContext, useContext, useEffect, useState, type ReactNode } from "
 
 export type Vehiculo = { marca: string; modelo: string; anio: number; patente: string; km: number };
 export type Documento = { id: string; tipo: string; vencimiento: string; archivo?: string; archivoNombre?: string };
-export type Mantencion = { id: string; trabajo: string; fecha: string; km: number; costo: number };
+export type Mantencion = { id: string; trabajo: string; fecha: string; km: number; costo: number; proximoKm?: number };
 export type Gasto = { id: string; categoria: string; descripcion: string; fecha: string; monto: number };
 
 export type Datos = { vehiculo: Vehiculo; documentos: Documento[]; mantenciones: Mantencion[]; gastos: Gasto[] };
@@ -23,8 +23,8 @@ export const demo = (): Datos => ({
     { id: "d4", tipo: "Licencia de conducir", vencimiento: rel(-5) },
   ],
   mantenciones: [
-    { id: "m1", trabajo: "Cambio de aceite y filtro", fecha: rel(-40), km: 66000, costo: 45990 },
-    { id: "m2", trabajo: "Cambio de pastillas de freno", fecha: rel(-120), km: 61200, costo: 78000 },
+    { id: "m1", trabajo: "Cambio de aceite y filtro", fecha: rel(-40), km: 66000, costo: 45990, proximoKm: 68800 },
+    { id: "m2", trabajo: "Cambio de pastillas de freno", fecha: rel(-120), km: 61200, costo: 78000, proximoKm: 75000 },
   ],
   gastos: [
     { id: "g1", categoria: "Combustible", descripcion: "Bencina 95", fecha: rel(-3), monto: 42000 },
