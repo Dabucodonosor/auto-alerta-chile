@@ -10,33 +10,102 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as DocumentosRouteImport } from './routes/documentos'
+import { Route as GastosRouteImport } from './routes/gastos'
+import { Route as HistorialRouteImport } from './routes/historial'
+import { Route as MantencionesRouteImport } from './routes/mantenciones'
+import { Route as VehiculoRouteImport } from './routes/vehiculo'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DocumentosRoute = DocumentosRouteImport.update({
+  id: '/documentos',
+  path: '/documentos',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GastosRoute = GastosRouteImport.update({
+  id: '/gastos',
+  path: '/gastos',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HistorialRoute = HistorialRouteImport.update({
+  id: '/historial',
+  path: '/historial',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MantencionesRoute = MantencionesRouteImport.update({
+  id: '/mantenciones',
+  path: '/mantenciones',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const VehiculoRoute = VehiculoRouteImport.update({
+  id: '/vehiculo',
+  path: '/vehiculo',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/documentos': typeof DocumentosRoute
+  '/gastos': typeof GastosRoute
+  '/historial': typeof HistorialRoute
+  '/mantenciones': typeof MantencionesRoute
+  '/vehiculo': typeof VehiculoRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/documentos': typeof DocumentosRoute
+  '/gastos': typeof GastosRoute
+  '/historial': typeof HistorialRoute
+  '/mantenciones': typeof MantencionesRoute
+  '/vehiculo': typeof VehiculoRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/documentos': typeof DocumentosRoute
+  '/gastos': typeof GastosRoute
+  '/historial': typeof HistorialRoute
+  '/mantenciones': typeof MantencionesRoute
+  '/vehiculo': typeof VehiculoRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/documentos'
+    | '/gastos'
+    | '/historial'
+    | '/mantenciones'
+    | '/vehiculo'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/documentos'
+    | '/gastos'
+    | '/historial'
+    | '/mantenciones'
+    | '/vehiculo'
+  id:
+    | '__root__'
+    | '/'
+    | '/documentos'
+    | '/gastos'
+    | '/historial'
+    | '/mantenciones'
+    | '/vehiculo'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  DocumentosRoute: typeof DocumentosRoute
+  GastosRoute: typeof GastosRoute
+  HistorialRoute: typeof HistorialRoute
+  MantencionesRoute: typeof MantencionesRoute
+  VehiculoRoute: typeof VehiculoRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +117,51 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/documentos': {
+      id: '/documentos'
+      path: '/documentos'
+      fullPath: '/documentos'
+      preLoaderRoute: typeof DocumentosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/gastos': {
+      id: '/gastos'
+      path: '/gastos'
+      fullPath: '/gastos'
+      preLoaderRoute: typeof GastosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/historial': {
+      id: '/historial'
+      path: '/historial'
+      fullPath: '/historial'
+      preLoaderRoute: typeof HistorialRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/mantenciones': {
+      id: '/mantenciones'
+      path: '/mantenciones'
+      fullPath: '/mantenciones'
+      preLoaderRoute: typeof MantencionesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/vehiculo': {
+      id: '/vehiculo'
+      path: '/vehiculo'
+      fullPath: '/vehiculo'
+      preLoaderRoute: typeof VehiculoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  DocumentosRoute: DocumentosRoute,
+  GastosRoute: GastosRoute,
+  HistorialRoute: HistorialRoute,
+  MantencionesRoute: MantencionesRoute,
+  VehiculoRoute: VehiculoRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
