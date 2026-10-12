@@ -26,7 +26,7 @@ function Pagina() {
       descripcion="Registra tus documentos y sus fechas de vencimiento."
       items={items}
       newId={uid}
-      vacio={() => ({ tipo: tipos[0], vencimiento: new Date().toISOString().slice(0, 10) })}
+      vacio={() => ({ tipo: tipos[0]!, vencimiento: new Date().toISOString().slice(0, 10) })}
       campos={[
         { key: "tipo", label: "Tipo de documento", type: "select", options: tipos },
         { key: "vencimiento", label: "Fecha de vencimiento", type: "date", required: true },

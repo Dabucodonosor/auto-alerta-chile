@@ -102,8 +102,8 @@ export function Crud<T extends { id: string }>(p: Props<T>) {
                         r.readAsDataURL(f);
                       }}
                     />
-                    {edit.item.archivoNombre ? (
-                      <p className="mt-1 text-xs text-muted-foreground">Actual: {String(edit.item.archivoNombre)}</p>
+                    {edit.item["archivoNombre"] ? (
+                      <p className="mt-1 text-xs text-muted-foreground">Actual: {String(edit.item["archivoNombre"])}</p>
                     ) : null}
                   </div>
                 ) : (

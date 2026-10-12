@@ -39,7 +39,7 @@ function Pagina() {
         descripcion="Todos los costos asociados a tu vehículo."
         items={items}
         newId={uid}
-        vacio={() => ({ categoria: cats[0], descripcion: "", fecha: new Date().toISOString().slice(0, 10), monto: 0 })}
+        vacio={() => ({ categoria: cats[0]!, descripcion: "", fecha: new Date().toISOString().slice(0, 10), monto: 0 })}
         campos={[
           { key: "categoria", label: "Categoría", type: "select", options: cats },
           { key: "descripcion", label: "Descripción", type: "text" },
