@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Crud, upsert } from "@/components/Crud";
 import { diasHasta, fecha, uid, useStore, type Documento } from "@/lib/store";
-import { Estado } from "./index";
+import { Estado } from "@/components/Estado";
 
 export const Route = createFileRoute("/documentos")({
   head: () => ({

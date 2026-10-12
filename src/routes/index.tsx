@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { Estado } from "@/components/Estado";
 import { clp, diasHasta, fecha, km, useStore } from "@/lib/store";
 
 export const Route = createFileRoute("/")({
@@ -12,12 +13,6 @@ export const Route = createFileRoute("/")({
   }),
   component: Inicio,
 });
-
-export function Estado({ dias }: { dias: number }) {
-  const cls = dias < 0 ? "badge-danger" : dias <= 30 ? "badge-warn" : "badge-ok";
-  const txt = dias < 0 ? `Vencido hace ${-dias} días` : dias === 0 ? "Vence hoy" : `En ${dias} días`;
-  return <span className={cls}>{txt}</span>;
-}
 
 function Inicio() {
   const { datos } = useStore();
