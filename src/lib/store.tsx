@@ -1,6 +1,14 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 
-export type Vehiculo = { marca: string; modelo: string; anio: number; patente: string; km: number };
+export type Vehiculo = {
+  marca: string;
+  modelo: string;
+  anio: number;
+  patente: string;
+  km: number;
+  color?: string;
+  foto?: string;
+};
 export type Documento = { id: string; tipo: string; vencimiento: string; archivo?: string; archivoNombre?: string };
 export type Mantencion = { id: string; trabajo: string; fecha: string; km: number; costo: number; proximoKm?: number };
 export type Gasto = { id: string; categoria: string; descripcion: string; fecha: string; monto: number };
@@ -15,7 +23,15 @@ const rel = (d: number) => {
 };
 
 export const demo = (): Datos => ({
-  vehiculo: { marca: "Toyota", modelo: "Yaris", anio: 2019, patente: "KTRS-42", km: 68450 },
+  vehiculo: {
+    marca: "Toyota",
+    modelo: "Yaris",
+    anio: 2019,
+    patente: "KTRS-42",
+    km: 68450,
+    color: "Gris Plata",
+    foto: "/cars/toyota-yaris.jpg",
+  },
   documentos: [
     { id: "d1", tipo: "Permiso de circulación", vencimiento: rel(20) },
     { id: "d2", tipo: "Revisión técnica", vencimiento: rel(55) },
@@ -54,7 +70,9 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       try {
         localStorage.setItem(KEY, JSON.stringify(n));
       } catch {
-        alert("No hay espacio suficiente en el navegador (archivo muy grande).");
+        alert(
+          "No fue posible guardar la información en el navegador por falta de espacio en la memoria local. Intenta usar una imagen más liviana."
+        );
         return d;
       }
       return n;

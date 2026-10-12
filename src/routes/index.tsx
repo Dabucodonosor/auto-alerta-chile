@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Estado } from "@/components/Estado";
 import { clp, diasHasta, fecha, km, useStore } from "@/lib/store";
+import { obtenerImagenVehiculo } from "@/lib/vehiculo-fotos";
 import {
   AlertTriangle,
   Clock,
@@ -9,6 +10,12 @@ import {
   Wrench,
   FileText,
   CheckCircle2,
+  Gauge,
+  Palette,
+  Camera,
+  Plus,
+  Receipt,
+  Car,
 } from "lucide-react";
 
 export const Route = createFileRoute("/")({
@@ -27,10 +34,12 @@ function Inicio() {
   const { datos } = useStore();
   const v = datos.vehiculo;
   const kmActual = v.km || 0;
+  const infoImg = obtenerImagenVehiculo(v);
 
   // Documentos ordenados por fecha de vencimiento
   const docs = [...datos.documentos].sort((a, b) => a.vencimiento.localeCompare(b.vencimiento));
-  const docsAlertas = docs.filter((d) => diasHasta(d.vencimiento) <= 30);
+  const docsVencidos = docs.filter((d) => diasHasta(d.vencimiento) < 0);
+  const docsProximos = docs.filter((d) => diasHasta(d.vencimiento) >= 0 && diasHasta(d.vencimiento) <= 30);
 
   // Mantenciones con próximo kilometraje definido
   const mantencionesConProximo = datos.mantenciones.filter(
@@ -47,183 +56,269 @@ function Inicio() {
     (m) => m.proximoKm! > kmActual && m.proximoKm! - kmActual <= 500
   );
 
-  const mes = new Date().toISOString().slice(0, 7);
-  const anio = mes.slice(0, 4);
-  const todos = [
-    ...datos.gastos.map((g) => ({ f: g.fecha, m: g.monto })),
-    ...datos.mantenciones.map((m) => ({ f: m.fecha, m: m.costo })),
-  ];
-  const gMes = todos.filter((x) => x.f.startsWith(mes)).reduce((s, x) => s + x.m, 0);
-  const gAnio = todos.filter((x) => x.f.startsWith(anio)).reduce((s, x) => s + x.m, 0);
+  const mesActual = new Date().toISOString().slice(0, 7);
+  const gastosMes = datos.gastos
+    .filter((g) => g.fecha.startsWith(mesActual))
+    .reduce((s, g) => s + g.monto, 0);
 
-  const totalAlertas = docsAlertas.length + mantencionesVencidas.length + mantencionesProximas.length;
+  const totalAlertasCriticas = docsVencidos.length + mantencionesVencidas.length;
+  const totalAvisosPreventivos = docsProximos.length + mantencionesProximas.length;
 
   return (
     <div className="space-y-6">
-      {/* Resumen del Vehículo (Hero Card en Azul Petróleo) */}
-      <section className="hero-card relative overflow-hidden">
-        <div className="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-          <div>
-            <p className="text-xs uppercase tracking-widest text-accent font-semibold mb-1">
-              Vehículo en seguimiento
-            </p>
-            <h1 className="font-display text-3xl font-bold tracking-tight text-white md:text-4xl">
-              {v.marca} {v.modelo} <span className="text-white/60 font-normal">{v.anio}</span>
-            </h1>
-            <div className="mt-4 flex flex-wrap items-center gap-3">
-              <span className="plate">{v.patente}</span>
-              <span className="inline-flex items-center gap-1.5 rounded-md bg-white/10 backdrop-blur-sm px-3 py-1 text-sm font-medium text-white border border-white/10">
-                {km(kmActual)}
-              </span>
+      {/* 1. Tarjeta Principal del Vehículo con su Fotografía */}
+      <section className="card overflow-hidden border border-border shadow-md bg-card">
+        <div className="grid md:grid-cols-12 gap-0 items-center">
+          {/* Fotografía o ilustración del vehículo */}
+          <div className="md:col-span-5 relative bg-secondary/40 flex items-center justify-center min-h-[200px] md:min-h-[240px] p-4 border-b md:border-b-0 md:border-r border-border">
+            <img
+              src={infoImg.url}
+              alt={`${v.marca || "Vehículo"} ${v.modelo || ""}`}
+              className="max-h-[200px] w-auto max-w-full object-contain rounded-lg drop-shadow-md"
+            />
+            <div className="absolute top-3 left-3">
+              {infoImg.tipo === "propia" ? (
+                <span className="badge-ok font-semibold text-[11px] shadow-sm">
+                  ✓ Foto propia
+                </span>
+              ) : infoImg.tipo === "modelo" ? (
+                <span className="badge-neutral font-semibold text-[11px] shadow-sm">
+                  Modelo representativo
+                </span>
+              ) : (
+                <span className="badge-neutral text-[11px] shadow-sm">
+                  Ilustración genérica
+                </span>
+              )}
             </div>
           </div>
 
-          <div className="flex md:flex-col items-center md:items-end justify-between border-t border-white/10 pt-3 md:border-0 md:pt-0">
-            <Link
-              to="/vehiculo"
-              className="inline-flex items-center gap-1.5 text-xs font-semibold text-accent hover:underline"
-            >
-              Actualizar kilometraje →
-            </Link>
+          {/* Información principal del vehículo */}
+          <div className="md:col-span-7 p-5 md:p-6 flex flex-col justify-between">
+            <div>
+              <p className="text-xs uppercase tracking-widest text-primary font-semibold">
+                Mi vehículo
+              </p>
+              <h1 className="font-display text-2xl md:text-3xl font-bold tracking-tight text-foreground mt-0.5">
+                {v.marca || "Vehículo"} {v.modelo || ""} <span className="font-normal text-muted-foreground text-xl">({v.anio || "—"})</span>
+              </h1>
+
+              {/* Fila de especificaciones y placa */}
+              <div className="mt-3.5 flex flex-wrap items-center gap-2.5">
+                <span className="plate">{v.patente || "SIN-PAT"}</span>
+                <span className="inline-flex items-center gap-1.5 rounded-md bg-secondary px-3 py-1.5 text-xs font-semibold text-foreground">
+                  <Gauge className="h-3.5 w-3.5 text-primary" />
+                  {km(kmActual)}
+                </span>
+                {v.color && (
+                  <span className="inline-flex items-center gap-1.5 rounded-md bg-secondary px-3 py-1.5 text-xs font-medium text-foreground">
+                    <Palette className="h-3.5 w-3.5 text-accent" />
+                    Color: {v.color}
+                  </span>
+                )}
+              </div>
+            </div>
+
+            <div className="mt-5 pt-3 border-t border-border flex items-center justify-between">
+              <Link
+                to="/vehiculo"
+                className="inline-flex items-center gap-1.5 text-xs font-semibold text-primary hover:underline"
+              >
+                <Camera className="h-3.5 w-3.5" />
+                <span>Editar vehículo o foto →</span>
+              </Link>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Alertas Críticas o Próximas de Mantención */}
-      {(mantencionesVencidas.length > 0 || mantencionesProximas.length > 0) && (
+      {/* 2. Sección de Alertas Prioritarias (Vencidas y Próximas) */}
+      {(totalAlertasCriticas > 0 || totalAvisosPreventivos > 0) && (
         <section className="space-y-3">
-          {/* Mantención Vencida (Alcanzó o superó el kilometraje) */}
+          <div className="flex items-center justify-between">
+            <h2 className="font-display text-lg font-bold text-foreground flex items-center gap-2">
+              <AlertTriangle className="h-4 w-4 text-warning" />
+              <span>Avisos y recordatorios activos</span>
+            </h2>
+          </div>
+
+          {/* Documentos Vencidos (Alerta más visible) */}
+          {docsVencidos.map((d) => (
+            <div
+              key={`doc-vencido-${d.id}`}
+              className="card flex flex-wrap items-center justify-between gap-3 p-4 border-l-4 border-l-destructive bg-destructive/5"
+            >
+              <div className="flex items-center gap-3">
+                <div className="rounded-full bg-destructive/15 p-2 text-destructive shrink-0">
+                  <AlertTriangle className="h-4 w-4" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="badge-danger">Documento Vencido</span>
+                    <span className="text-xs font-semibold text-destructive">
+                      Venció hace {-diasHasta(d.vencimiento)} días
+                    </span>
+                  </div>
+                  <p className="font-semibold text-foreground mt-0.5 text-sm">{d.tipo}</p>
+                </div>
+              </div>
+              <Link to="/documentos" className="btn-ghost text-xs">
+                Ver documento
+              </Link>
+            </div>
+          ))}
+
+          {/* Mantenciones Vencidas por Kilometraje */}
           {mantencionesVencidas.map((m) => {
             const excedido = kmActual - m.proximoKm!;
             return (
               <div
-                key={`vencida-${m.id}`}
-                className="card flex items-start justify-between gap-4 p-4 border-l-4 border-l-destructive bg-destructive/5"
+                key={`mant-vencida-${m.id}`}
+                className="card flex flex-wrap items-center justify-between gap-3 p-4 border-l-4 border-l-destructive bg-destructive/5"
               >
-                <div className="flex items-start gap-3">
-                  <div className="rounded-full bg-destructive/15 p-2 text-destructive shrink-0 mt-0.5">
-                    <AlertTriangle className="h-4 w-4" />
+                <div className="flex items-center gap-3">
+                  <div className="rounded-full bg-destructive/15 p-2 text-destructive shrink-0">
+                    <Wrench className="h-4 w-4" />
                   </div>
                   <div>
                     <div className="flex items-center gap-2">
                       <span className="badge-danger">Mantención Vencida</span>
-                      <span className="text-xs text-muted-foreground">Excedida por {km(excedido)}</span>
+                      <span className="text-xs font-semibold text-destructive">
+                        Excedida por {km(excedido)}
+                      </span>
                     </div>
-                    <p className="font-semibold text-foreground mt-1">{m.trabajo}</p>
-                    <p className="text-xs text-muted-foreground mt-0.5">
-                      Programada a los {km(m.proximoKm!)} (kilometraje actual del vehículo: {km(kmActual)})
+                    <p className="font-semibold text-foreground mt-0.5 text-sm">{m.trabajo}</p>
+                    <p className="text-xs text-muted-foreground">
+                      Prevista a los {km(m.proximoKm!)} (kilometraje actual: {km(kmActual)})
                     </p>
                   </div>
                 </div>
-                <Link
-                  to="/mantenciones"
-                  className="btn-ghost shrink-0 text-xs text-foreground font-medium"
-                >
+                <Link to="/mantenciones" className="btn-ghost text-xs">
                   Ver mantención
                 </Link>
               </div>
             );
           })}
 
-          {/* Próxima Mantención (≤ 500 km restantes) */}
+          {/* Mantenciones Próximas (Faltan ≤ 500 km) */}
           {mantencionesProximas.map((m) => {
-            const restante = m.proximoKm! - kmActual;
+            const faltan = m.proximoKm! - kmActual;
             return (
               <div
-                key={`proxima-${m.id}`}
-                className="card flex items-start justify-between gap-4 p-4 border-l-4 border-l-warning bg-warning/5"
+                key={`mant-proxima-${m.id}`}
+                className="card flex flex-wrap items-center justify-between gap-3 p-4 border-l-4 border-l-warning bg-warning/5"
               >
-                <div className="flex items-start gap-3">
-                  <div className="rounded-full bg-warning/20 p-2 text-warning shrink-0 mt-0.5">
+                <div className="flex items-center gap-3">
+                  <div className="rounded-full bg-warning/20 p-2 text-warning shrink-0">
                     <Clock className="h-4 w-4" />
                   </div>
                   <div>
                     <div className="flex items-center gap-2">
                       <span className="badge-warn">Próxima Mantención</span>
-                      <span className="text-xs font-semibold text-foreground">Faltan {km(restante)}</span>
+                      <span className="text-xs font-semibold text-foreground">
+                        Faltan {km(faltan)}
+                      </span>
                     </div>
-                    <p className="font-semibold text-foreground mt-1">{m.trabajo}</p>
-                    <p className="text-xs text-muted-foreground mt-0.5">
-                      Prevista para los {km(m.proximoKm!)} (actual: {km(kmActual)})
+                    <p className="font-semibold text-foreground mt-0.5 text-sm">{m.trabajo}</p>
+                    <p className="text-xs text-muted-foreground">
+                      Prevista a los {km(m.proximoKm!)} (actual: {km(kmActual)})
                     </p>
                   </div>
                 </div>
-                <Link
-                  to="/mantenciones"
-                  className="btn-ghost shrink-0 text-xs text-foreground font-medium"
-                >
+                <Link to="/mantenciones" className="btn-ghost text-xs">
                   Ver mantención
                 </Link>
               </div>
             );
           })}
+
+          {/* Documentos Próximos a Vencer (Aviso preventivo discreto) */}
+          {docsProximos.map((d) => (
+            <div
+              key={`doc-proximo-${d.id}`}
+              className="card flex flex-wrap items-center justify-between gap-3 p-3.5 border-l-4 border-l-warning/70 bg-card"
+            >
+              <div className="flex items-center gap-3">
+                <div className="rounded-full bg-warning/15 p-1.5 text-warning shrink-0">
+                  <Calendar className="h-3.5 w-3.5" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="badge-warn text-[10px]">Por Vencer</span>
+                    <span className="text-xs text-muted-foreground">Vence el {fecha(d.vencimiento)}</span>
+                  </div>
+                  <p className="font-semibold text-foreground text-sm mt-0.5">{d.tipo}</p>
+                </div>
+              </div>
+              <Estado dias={diasHasta(d.vencimiento)} />
+            </div>
+          ))}
         </section>
       )}
 
-      {/* Tarjetas de Métricas Clave */}
-      <div className="grid gap-4 sm:grid-cols-3">
-        <div className="card p-5">
-          <p className="text-xs uppercase tracking-wider text-muted-foreground font-semibold">
-            Alertas activas
-          </p>
-          <div className="mt-2 flex items-baseline justify-between">
-            <p className="font-display text-3xl font-bold text-primary">{totalAlertas}</p>
-            {totalAlertas === 0 ? (
-              <span className="badge-ok inline-flex items-center gap-1">
-                <CheckCircle2 className="h-3 w-3" /> Al día
-              </span>
-            ) : (
-              <span className="badge-warn">{totalAlertas} pendientes</span>
-            )}
+      {/* 3. Panel de Resumen de Gastos del Mes */}
+      <section className="card p-5 border border-border">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Receipt className="h-5 w-5 text-primary" />
+            <h2 className="font-display text-lg font-bold text-foreground">Gastos de este mes</h2>
           </div>
-          <p className="mt-1 text-xs text-muted-foreground">
-            {docsAlertas.length} en documentos · {mantencionesVencidas.length + mantencionesProximas.length} en mantenciones
-          </p>
+          <Link
+            to="/gastos"
+            className="inline-flex items-center gap-1 text-xs font-semibold text-primary hover:underline"
+          >
+            Ver todos los gastos
+            <ArrowRight className="h-3 w-3" />
+          </Link>
         </div>
 
-        <div className="card p-5">
-          <p className="text-xs uppercase tracking-wider text-muted-foreground font-semibold">
-            Gastos este mes
-          </p>
-          <p className="mt-2 font-display text-3xl font-bold text-foreground">{clp(gMes)}</p>
-          <p className="mt-1 text-xs text-muted-foreground">Combustible, mantenciones y otros</p>
+        <div className="mt-4 flex flex-wrap items-baseline justify-between gap-2">
+          <div>
+            <p className="font-display text-3xl font-bold text-foreground">{clp(gastosMes)}</p>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              {gastosMes > 0
+                ? "Total acumulado en combustible, mantenciones y otros este mes."
+                : "No has registrado gastos durante el mes actual."}
+            </p>
+          </div>
+          {gastosMes === 0 && (
+            <Link to="/gastos" className="btn-ghost text-xs">
+              <Plus className="h-3.5 w-3.5" />
+              <span>Registrar gasto</span>
+            </Link>
+          )}
         </div>
+      </section>
 
-        <div className="card p-5">
-          <p className="text-xs uppercase tracking-wider text-muted-foreground font-semibold">
-            Gastos acumulados {anio}
-          </p>
-          <p className="mt-2 font-display text-3xl font-bold text-foreground">{clp(gAnio)}</p>
-          <p className="mt-1 text-xs text-muted-foreground">Total anual registrado</p>
-        </div>
-      </div>
-
-      {/* Próximas Fechas Importantes (Documentos) */}
-      <section className="card p-6">
+      {/* 4. Lista de Documentos Registrados */}
+      <section className="card p-5 border border-border">
         <div className="mb-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <FileText className="h-5 w-5 text-primary" />
-            <h2 className="font-display text-xl font-bold text-foreground">
-              Próximos vencimientos de documentos
+            <h2 className="font-display text-lg font-bold text-foreground">
+              Documentos del vehículo
             </h2>
           </div>
           <Link
             to="/documentos"
-            className="inline-flex items-center gap-1 text-sm font-semibold text-primary hover:underline"
+            className="inline-flex items-center gap-1 text-xs font-semibold text-primary hover:underline"
           >
             Ver todos ({docs.length})
-            <ArrowRight className="h-3.5 w-3.5" />
+            <ArrowRight className="h-3 w-3" />
           </Link>
         </div>
 
         {docs.length === 0 ? (
-          <p className="py-4 text-center text-sm text-muted-foreground border border-dashed rounded-lg">
-            No tienes documentos registrados todavía.
-          </p>
+          <div className="py-6 text-center space-y-2 border border-dashed rounded-lg">
+            <p className="text-sm text-muted-foreground">No tienes documentos registrados todavía.</p>
+            <Link to="/documentos" className="btn-primary text-xs inline-flex items-center gap-1">
+              <Plus className="h-3.5 w-3.5" /> Agregar permiso, SOAP o revisión técnica
+            </Link>
+          </div>
         ) : (
           <ul className="divide-y divide-border">
-            {docs.slice(0, 5).map((d) => (
-              <li key={d.id} className="flex items-center justify-between gap-3 py-3.5">
+            {docs.slice(0, 4).map((d) => (
+              <li key={d.id} className="flex items-center justify-between gap-3 py-3">
                 <div>
                   <p className="font-semibold text-foreground text-sm">{d.tipo}</p>
                   <p className="text-xs text-muted-foreground flex items-center gap-1 mt-0.5">
@@ -238,50 +333,58 @@ function Inicio() {
         )}
       </section>
 
-      {/* Próximas Mantenciones Programadas */}
-      <section className="card p-6">
+      {/* 5. Próximas Mantenciones Programadas */}
+      <section className="card p-5 border border-border">
         <div className="mb-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Wrench className="h-5 w-5 text-primary" />
-            <h2 className="font-display text-xl font-bold text-foreground">
-              Control de mantenciones por kilometraje
+            <h2 className="font-display text-lg font-bold text-foreground">
+              Mantenciones y servicios
             </h2>
           </div>
           <Link
             to="/mantenciones"
-            className="inline-flex items-center gap-1 text-sm font-semibold text-primary hover:underline"
+            className="inline-flex items-center gap-1 text-xs font-semibold text-primary hover:underline"
           >
-            Ver todas
-            <ArrowRight className="h-3.5 w-3.5" />
+            Ver todas ({datos.mantenciones.length})
+            <ArrowRight className="h-3 w-3" />
           </Link>
         </div>
 
-        {mantencionesConProximo.length === 0 ? (
-          <p className="py-4 text-center text-sm text-muted-foreground border border-dashed rounded-lg">
-            No has configurado un próximo kilometraje en tus mantenciones todavía.
-          </p>
+        {datos.mantenciones.length === 0 ? (
+          <div className="py-6 text-center space-y-2 border border-dashed rounded-lg">
+            <p className="text-sm text-muted-foreground">Sin mantenciones registradas aún.</p>
+            <Link to="/mantenciones" className="btn-primary text-xs inline-flex items-center gap-1">
+              <Plus className="h-3.5 w-3.5" /> Registrar cambio de aceite o revisión
+            </Link>
+          </div>
         ) : (
           <ul className="divide-y divide-border">
-            {mantencionesConProximo.map((m) => {
-              const diffKm = m.proximoKm! - kmActual;
-              const vencida = diffKm <= 0;
-              const proxima = diffKm > 0 && diffKm <= 500;
+            {datos.mantenciones.slice(0, 4).map((m) => {
+              const tieneProximo = typeof m.proximoKm === "number" && m.proximoKm > 0;
+              const diffKm = tieneProximo ? m.proximoKm! - kmActual : null;
+              const vencida = diffKm !== null && diffKm <= 0;
+              const proxima = diffKm !== null && diffKm > 0 && diffKm <= 500;
 
               return (
-                <li key={m.id} className="flex items-center justify-between gap-3 py-3.5">
+                <li key={m.id} className="flex items-center justify-between gap-3 py-3">
                   <div>
                     <p className="font-semibold text-foreground text-sm">{m.trabajo}</p>
                     <p className="text-xs text-muted-foreground mt-0.5">
-                      Prevista a los {km(m.proximoKm!)} · Realizada en {fecha(m.fecha)}
+                      {fecha(m.fecha)} · Realizada a los {km(m.km)}
                     </p>
                   </div>
                   <div>
-                    {vencida ? (
-                      <span className="badge-danger">Vencida (+{km(Math.abs(diffKm))})</span>
-                    ) : proxima ? (
-                      <span className="badge-warn">Próxima (-{km(diffKm)})</span>
+                    {tieneProximo ? (
+                      vencida ? (
+                        <span className="badge-danger text-xs">Vencida (+{km(Math.abs(diffKm!))})</span>
+                      ) : proxima ? (
+                        <span className="badge-warn text-xs">Próxima (-{km(diffKm!)})</span>
+                      ) : (
+                        <span className="badge-neutral text-xs">En {km(diffKm!)}</span>
+                      )
                     ) : (
-                      <span className="badge-neutral">En {km(diffKm)}</span>
+                      <span className="text-xs font-bold text-foreground">{clp(m.costo)}</span>
                     )}
                   </div>
                 </li>

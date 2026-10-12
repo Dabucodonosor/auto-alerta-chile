@@ -1,0 +1,142 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f1f5f9"/>
+      <stop offset="100%" stop-color="#e2e8f0"/>
+    </linearGradient>
+    <linearGradient id="carBody" x1="0%" y1="0%" x2="100%" y2="50%">
+      <stop offset="0%" stop-color="#1e3a47"/>
+      <stop offset="50%" stop-color="#2c5264"/>
+      <stop offset="100%" stop-color="#162c37"/>
+    </linearGradient>
+    <linearGradient id="carRoof" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#0ea5e9" stop-opacity="0.3"/>
+      <stop offset="100%" stop-color="#1e3a47"/>
+    </linearGradient>
+    <linearGradient id="glass" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.35"/>
+      <stop offset="70%" stop-color="#0284c7" stop-opacity="0.15"/>
+      <stop offset="100%" stop-color="#0f172a" stop-opacity="0.6"/>
+    </linearGradient>
+    <linearGradient id="accentLine" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#14b8a6"/>
+      <stop offset="100%" stop-color="#06b6d4"/>
+    </linearGradient>
+    <radialGradient id="shadow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#0f172a" stop-opacity="0.35"/>
+      <stop offset="70%" stop-color="#0f172a" stop-opacity="0.1"/>
+      <stop offset="100%" stop-color="#0f172a" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="wheelRim" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#cbd5e1"/>
+      <stop offset="50%" stop-color="#64748b"/>
+      <stop offset="100%" stop-color="#1e293b"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="100%" height="100%" fill="url(#bgGrad)"/>
+  
+  <!-- Studio floor grid line -->
+  <line x1="40" y1="360" x2="760" y2="360" stroke="#cbd5e1" stroke-width="1.5" stroke-dasharray="6,6"/>
+
+  <!-- Sombra en el suelo -->
+  <ellipse cx="400" cy="365" rx="310" ry="24" fill="url(#shadow)"/>
+
+  <!-- Carrocería Silhouette -->
+  <!-- Silueta base -->
+  <path d="M 140,325 
+           C 142,320 152,298 168,285
+           C 185,272 230,265 295,260
+           C 335,215 390,175 480,165
+           C 555,157 615,182 645,235
+           C 660,250 675,265 680,285
+           C 685,305 680,325 675,330
+           C 655,332 630,332 620,332
+           C 615,295 580,268 540,268
+           C 500,268 465,295 460,332
+           L 290,332
+           C 285,295 250,268 210,268
+           C 170,268 135,295 130,332
+           Z" 
+        fill="url(#carBody)"/>
+
+  <!-- Cabina / Techo -->
+  <path d="M 305,255 
+           C 345,212 398,174 485,166
+           C 550,160 605,182 635,235
+           C 605,238 520,244 425,248
+           Z" 
+        fill="url(#carRoof)"/>
+
+  <!-- Ventanas -->
+  <!-- Ventana delantera -->
+  <path d="M 480,175 
+           C 420,182 375,212 345,248
+           L 445,245
+           C 475,215 480,185 480,175
+           Z" 
+        fill="url(#glass)"/>
+
+  <!-- Ventana trasera -->
+  <path d="M 490,175 
+           L 455,245
+           L 615,238
+           C 590,195 550,175 490,175
+           Z" 
+        fill="url(#glass)"/>
+
+  <!-- Pilar B -->
+  <rect x="470" y="172" width="12" height="74" fill="#0f172a" rx="2"/>
+
+  <!-- Línea de carácter / acento turquesa aerodinámica -->
+  <path d="M 160,285 C 260,270 470,255 675,275" 
+        stroke="url(#accentLine)" stroke-width="3" stroke-linecap="round" fill="none"/>
+
+  <!-- Foco delantero -->
+  <path d="M 148,295 C 160,288 185,285 200,288 C 185,298 165,305 148,295 Z" 
+        fill="#38bdf8" opacity="0.85"/>
+  <circle cx="160" cy="295" r="4" fill="#ffffff"/>
+
+  <!-- Foco trasero -->
+  <path d="M 665,280 C 675,284 678,295 672,305 C 660,300 655,290 665,280 Z" 
+        fill="#f43f5e" opacity="0.9"/>
+
+  <!-- Rueda delantera (izquierda) -->
+  <g transform="translate(210, 330)">
+    <!-- Neumático -->
+    <circle cx="0" cy="0" r="48" fill="#1e293b"/>
+    <circle cx="0" cy="0" r="44" fill="#0f172a"/>
+    <circle cx="0" cy="0" r="33" fill="url(#wheelRim)"/>
+    <!-- Rayos de llanta deportiva -->
+    <circle cx="0" cy="0" r="12" fill="#334155"/>
+    <line x1="0" y1="-30" x2="0" y2="30" stroke="#cbd5e1" stroke-width="4"/>
+    <line x1="-30" y1="0" x2="30" y2="0" stroke="#cbd5e1" stroke-width="4"/>
+    <line x1="-21" y1="-21" x2="21" y2="21" stroke="#cbd5e1" stroke-width="4"/>
+    <line x1="-21" y1="21" x2="21" y2="-21" stroke="#cbd5e1" stroke-width="4"/>
+    <circle cx="0" cy="0" r="6" fill="#14b8a6"/>
+  </g>
+
+  <!-- Rueda trasera (derecha) -->
+  <g transform="translate(540, 330)">
+    <!-- Neumático -->
+    <circle cx="0" cy="0" r="48" fill="#1e293b"/>
+    <circle cx="0" cy="0" r="44" fill="#0f172a"/>
+    <circle cx="0" cy="0" r="33" fill="url(#wheelRim)"/>
+    <!-- Rayos de llanta deportiva -->
+    <circle cx="0" cy="0" r="12" fill="#334155"/>
+    <line x1="0" y1="-30" x2="0" y2="30" stroke="#cbd5e1" stroke-width="4"/>
+    <line x1="-30" y1="0" x2="30" y2="0" stroke="#cbd5e1" stroke-width="4"/>
+    <line x1="-21" y1="-21" x2="21" y2="21" stroke="#cbd5e1" stroke-width="4"/>
+    <line x1="-21" y1="21" x2="21" y2="-21" stroke="#cbd5e1" stroke-width="4"/>
+    <circle cx="0" cy="0" r="6" fill="#14b8a6"/>
+  </g>
+
+  <!-- Espejo retrovisor -->
+  <path d="M 430,225 C 418,220 405,225 408,235 C 418,238 430,234 430,225 Z" fill="#1e3a47"/>
+
+  <!-- Badge / Texto inferior sutil -->
+  <text x="400" y="420" font-family="system-ui, sans-serif" font-size="12" font-weight="600" fill="#64748b" text-anchor="middle" letter-spacing="2">
+    AUTOALERTA · VEHÍCULO REGISTRADO
+  </text>
+</svg>
